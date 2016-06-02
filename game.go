@@ -1,7 +1,5 @@
 package battleship
 
-import "fmt"
-
 /*
 A game represents a single game board, controlled by a single
 player.
@@ -24,8 +22,54 @@ type Grid struct {
 
 // Verifies the ships are in a valid arrangement
 func ValidateShips(ships []*Ship) bool {
-	//TODO
-	fmt.Println(ships)
+
+	// Check there are the right number of ships
+	if len(ships) != 5 {
+		return false
+	}
+
+	expectedLens := []uint{5, 4, 3, 3, 2}
+
+	// Make ourselves a board to scratch work on
+	board := newBoard()
+
+	for i, ship := range ships {
+
+		// Check the length of the ships is not changed
+		if ship.Length != expectedLens[i] {
+			return false
+		}
+
+		// check that start < end
+		if ship.Start.X > ship.End.X || ship.Start.Y > ship.End.Y {
+			return false
+		}
+
+		// check board bounds
+		if ship.Start.X < 0 || ship.Start.Y < 0 {
+			return false
+		}
+		if ship.End.X >= 10 || ship.End.Y >= 10 {
+			return false
+		}
+
+		// Add the ships to the board
+		board.AddShip(ship)
+	}
+
+	// Ensure that there are 17 tiles filled
+	var tileCount uint
+	for _, col := range board {
+		for _, row := range col {
+			if row == SHIP {
+				tileCount++
+			}
+		}
+	}
+	if tileCount != 17 {
+		return false
+	}
+
 	return true
 }
 
